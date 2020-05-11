@@ -1,0 +1,54 @@
+import speech_recognition as sr
+r=sr.Recognizer()
+from translate import Translator
+import json
+import os 
+import playsound
+from gtts import gTTS
+import difflib
+from difflib import get_close_matches
+def find(word):
+    match=difflib.get_close_matches(word,data)
+    if word in data:
+        return data[word]
+    elif word.title() in data:
+        return data[word.title()]
+    elif word.upper() in data:
+        return data[word.upper()]
+    elif match[0] in data:
+        print('did you mean ',match[0],'instead of',word)
+        inp=str(input('Press y for yes and n for No'))
+        if inp=="y":
+            return data[match[0]]
+        elif inp=="n":
+            l=['You have entered the wrong word']
+            return l
+            l=[]
+        else:
+            l=['You have given wrong input']
+            return l
+            l=[]
+            
+    else:
+        l=['You have entered the wrong word']
+        return l
+        l=[]
+    
+data=json.load(open("original.json"))
+with sr.Microphone() as source:
+    print('Speak the word you want to search')
+    audio=r.listen(source)
+    try:
+        word=r.recognize_google(audio)
+        print('You searched for '+word)
+    except:
+        print('Sorry could not recognize your voice')
+meaning=find(word)
+for i in range(0,len(meaning)):
+    translator= Translator(to_lang="hi")
+    trans=translator.translate(meaning[i])
+    print(trans)
+    myobj=gTTS(text=trans,lang='hi',slow=False)
+    os.remove('welcome.mp3')
+    myobj.save('welcome.mp3')
+    playsound.playsound('welcome.mp3')
